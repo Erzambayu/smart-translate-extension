@@ -14,6 +14,7 @@
     let lastSelectedText = '';
     let currentTextBox = null;
     let translationTimer = null; // Timer untuk delay terjemahan
+    let serviceEnabled = true; // Service on/off state
 
     // ===== Config =====
     const TRANSLATION_DELAY_MS = 500; // Delay sebelum terjemahan dimulai (dalam milidetik)
@@ -30,17 +31,22 @@
     // ===== Settings =====
     async function loadSettings() {
         try {
-            settings = await chrome.storage.sync.get([
+            const result = await chrome.storage.sync.get([
                 'service',
                 'customEndpoint',
                 'apiKey',
                 'sourceLang',
                 'targetLang',
-                'smartTranslate'
+                'smartTranslate',
+                'serviceEnabled'
             ]);
+            settings = result;
+            // Default to enabled if not set
+            serviceEnabled = result.serviceEnabled !== false;
         } catch (error) {
             console.error('AI Translator: Failed to load settings', error);
             settings = {};
+            serviceEnabled = true;
         }
     }
 
@@ -48,6 +54,14 @@
         chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             if (message.type === 'SETTINGS_UPDATED') {
                 loadSettings();
+            }
+            if (message.type === 'SERVICE_STATE_CHANGED') {
+                serviceEnabled = message.enabled;
+                // Remove popup if service is disabled
+                if (!serviceEnabled) {
+                    removePopup();
+                    removeModal();
+                }
             }
         });
     }
@@ -111,6 +125,9 @@
     }
 
     async function handleMouseUp(e) {
+        // Ignore if service is disabled
+        if (!serviceEnabled) return;
+
         // Ignore if processing or no API key
         if (isProcessing || !settings?.apiKey) return;
 

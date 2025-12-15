@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AI Translator",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Instant AI-powered translation for selected text. Supports OpenAI, Gemini, DeepSeek, DeepL, and custom APIs.",
   "icons": {
     "16": "icons/icon-16.png",

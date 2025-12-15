@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,16 +10,34 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
   <div class="container">
     <!-- Header -->
     <header class="header">
-      <div class="logo">
-        <span class="logo-icon">🌐</span>
-        <div class="logo-text">
-          <h1>AI Translator</h1>
-          <p>Instant AI Translation</p>
+      <div class="header-top">
+        <div class="logo">
+          <span class="logo-icon">🌐</span>
+          <div class="logo-text">
+            <h1>AI Translator</h1>
+            <p>Instant AI Translation</p>
+          </div>
         </div>
+        <!-- Service On/Off Toggle -->
+        <div class="service-toggle">
+          <label class="power-toggle" title="Enable/Disable Translation Service">
+            <input type="checkbox" id="serviceEnabled" checked>
+            <span class="power-slider">
+              <svg class="power-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 2v10M18.4 6.6a9 9 0 1 1-12.8 0" />
+              </svg>
+            </span>
+          </label>
+        </div>
+      </div>
+      <div id="serviceStatus" class="service-status active">
+        <span class="status-dot"></span>
+        <span class="status-text">Service Active</span>
       </div>
     </header>
 
@@ -87,7 +106,7 @@
 
         <button type="button" id="swapLang" class="swap-btn" title="Swap Languages">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L21 16M17 20L13 16"/>
+            <path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L21 16M17 20L13 16" />
           </svg>
         </button>
 
@@ -139,10 +158,11 @@
 
     <!-- Footer -->
     <footer class="footer">
-      <p>v1.0.0 • Made with ❤️</p>
+      <p>v1.1.0 • Made with ❤️</p>
     </footer>
   </div>
 
   <script src="popup.js"></script>
 </body>
+
 </html>

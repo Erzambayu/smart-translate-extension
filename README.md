@@ -2,7 +2,7 @@
 
 Ekstensi Chrome untuk menerjemahkan teks secara instan menggunakan berbagai layanan AI. Cukup blok teks dan terjemahan akan muncul otomatis!
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
 ![Chrome](https://img.shields.io/badge/chrome-extension-green.svg)
 
 ## ✨ Fitur Utama
@@ -182,6 +182,7 @@ POST /your-endpoint
 | **Your Language** | Bahasa sumber (atau Auto Detect) |
 | **Target Language** | Bahasa tujuan terjemahan |
 | **Smart Translate** | Auto-detect dan swap bahasa berdasarkan input |
+| **Service On/Off** | Aktifkan/nonaktifkan layanan terjemahan tanpa menonaktifkan ekstensi |
 
 ---
 
@@ -211,6 +212,12 @@ Ekstensi ini tidak aktif di situs berikut untuk menghindari konflik:
 ---
 
 ## 📝 Changelog
+
+### v1.1.0
+- ✨ Tambah tombol On/Off service di header popup
+- 🎨 Status indicator dengan animasi pulse saat aktif
+- ⚡ Layanan terjemahan bisa diaktifkan/nonaktifkan tanpa menonaktifkan ekstensi
+- 🔔 Notifikasi status saat toggle service
 
 ### v1.0.0
 - Initial release

@@ -10,6 +10,8 @@ const swapLangBtn = document.getElementById('swapLang');
 const smartTranslateToggle = document.getElementById('smartTranslate');
 const saveBtn = document.getElementById('saveBtn');
 const statusMessage = document.getElementById('statusMessage');
+const serviceEnabledToggle = document.getElementById('serviceEnabled');
+const serviceStatus = document.getElementById('serviceStatus');
 
 // ===== Initialize =====
 document.addEventListener('DOMContentLoaded', loadSettings);
@@ -19,6 +21,7 @@ serviceSelect.addEventListener('change', handleServiceChange);
 toggleApiKeyBtn.addEventListener('click', toggleApiKeyVisibility);
 swapLangBtn.addEventListener('click', swapLanguages);
 saveBtn.addEventListener('click', saveSettings);
+serviceEnabledToggle.addEventListener('change', handleServiceToggle);
 
 // ===== Functions =====
 
@@ -33,7 +36,8 @@ async function loadSettings() {
       'apiKey',
       'sourceLang',
       'targetLang',
-      'smartTranslate'
+      'smartTranslate',
+      'serviceEnabled'
     ]);
 
     if (result.service) {
@@ -60,8 +64,57 @@ async function loadSettings() {
     if (result.smartTranslate !== undefined) {
       smartTranslateToggle.checked = result.smartTranslate;
     }
+
+    // Load service enabled state (default to true if not set)
+    const isEnabled = result.serviceEnabled !== false;
+    serviceEnabledToggle.checked = isEnabled;
+    updateServiceStatusUI(isEnabled);
   } catch (error) {
     console.error('Failed to load settings:', error);
+  }
+}
+
+/**
+ * Handle service on/off toggle
+ */
+async function handleServiceToggle() {
+  const isEnabled = serviceEnabledToggle.checked;
+  
+  try {
+    await chrome.storage.sync.set({ serviceEnabled: isEnabled });
+    updateServiceStatusUI(isEnabled);
+    
+    // Notify content scripts about the service state change
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tabs[0]) {
+      chrome.tabs.sendMessage(tabs[0].id, { 
+        type: 'SERVICE_STATE_CHANGED', 
+        enabled: isEnabled 
+      }).catch(() => {
+        // Ignore errors if content script is not loaded
+      });
+    }
+    
+    showStatus(
+      isEnabled ? 'Translation service enabled ✓' : 'Translation service disabled',
+      isEnabled ? 'success' : 'error'
+    );
+  } catch (error) {
+    console.error('Failed to toggle service:', error);
+    showStatus('Failed to toggle service', 'error');
+  }
+}
+
+/**
+ * Update service status UI
+ */
+function updateServiceStatusUI(isEnabled) {
+  if (isEnabled) {
+    serviceStatus.classList.add('active');
+    serviceStatus.querySelector('.status-text').textContent = 'Service Active';
+  } else {
+    serviceStatus.classList.remove('active');
+    serviceStatus.querySelector('.status-text').textContent = 'Service Inactive';
   }
 }
 
