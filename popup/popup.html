@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Translator</title>
+  <link rel="stylesheet" href="popup.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <span class="logo-icon">🌐</span>
+        <div class="logo-text">
+          <h1>AI Translator</h1>
+          <p>Instant AI Translation</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Translation Service -->
+      <div class="form-group">
+        <label for="service">TRANSLATION SERVICE</label>
+        <select id="service" class="select">
+          <option value="openai">OpenAI (ChatGPT)</option>
+          <option value="gemini">Google Gemini</option>
+          <option value="deepseek">DeepSeek</option>
+          <option value="deepl">DeepL</option>
+          <option value="custom">Custom API</option>
+        </select>
+      </div>
+
+      <!-- Custom Endpoint (hidden by default) -->
+      <div class="form-group hidden" id="customEndpointGroup">
+        <label for="customEndpoint">CUSTOM API ENDPOINT</label>
+        <input type="url" id="customEndpoint" class="input" placeholder="https://api.example.com/translate">
+        <span class="hint">Enter your custom API endpoint URL</span>
+      </div>
+
+      <!-- API Key -->
+      <div class="form-group">
+        <label for="apiKey">API KEY</label>
+        <div class="input-wrapper">
+          <input type="password" id="apiKey" class="input" placeholder="Enter your API key">
+          <button type="button" id="toggleApiKey" class="toggle-btn" title="Show/Hide API Key">
+            <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
+        <span class="hint">Get your key from the provider's dashboard</span>
+      </div>
+
+      <!-- Language Selection -->
+      <div class="language-section">
+        <div class="language-group">
+          <label>YOUR LANGUAGE</label>
+          <select id="sourceLang" class="select">
+            <option value="auto">🔍 Auto Detect</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="id">🇮🇩 Indonesian</option>
+            <option value="ja">🇯🇵 Japanese</option>
+            <option value="ko">🇰🇷 Korean</option>
+            <option value="zh">🇨🇳 Chinese</option>
+            <option value="es">🇪🇸 Spanish</option>
+            <option value="fr">🇫🇷 French</option>
+            <option value="de">🇩🇪 German</option>
+            <option value="pt">🇵🇹 Portuguese</option>
+            <option value="ru">🇷🇺 Russian</option>
+            <option value="ar">🇸🇦 Arabic</option>
+            <option value="hi">🇮🇳 Hindi</option>
+            <option value="th">🇹🇭 Thai</option>
+            <option value="vi">🇻🇳 Vietnamese</option>
+            <option value="nl">🇳🇱 Dutch</option>
+            <option value="pl">🇵🇱 Polish</option>
+            <option value="tr">🇹🇷 Turkish</option>
+            <option value="it">🇮🇹 Italian</option>
+          </select>
+        </div>
+
+        <button type="button" id="swapLang" class="swap-btn" title="Swap Languages">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L21 16M17 20L13 16"/>
+          </svg>
+        </button>
+
+        <div class="language-group">
+          <label>TARGET LANGUAGE</label>
+          <select id="targetLang" class="select">
+            <option value="id">🇮🇩 Indonesian</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="ja">🇯🇵 Japanese</option>
+            <option value="ko">🇰🇷 Korean</option>
+            <option value="zh">🇨🇳 Chinese</option>
+            <option value="es">🇪🇸 Spanish</option>
+            <option value="fr">🇫🇷 French</option>
+            <option value="de">🇩🇪 German</option>
+            <option value="pt">🇵🇹 Portuguese</option>
+            <option value="ru">🇷🇺 Russian</option>
+            <option value="ar">🇸🇦 Arabic</option>
+            <option value="hi">🇮🇳 Hindi</option>
+            <option value="th">🇹🇭 Thai</option>
+            <option value="vi">🇻🇳 Vietnamese</option>
+            <option value="nl">🇳🇱 Dutch</option>
+            <option value="pl">🇵🇱 Polish</option>
+            <option value="tr">🇹🇷 Turkish</option>
+            <option value="it">🇮🇹 Italian</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Smart Translate Toggle -->
+      <div class="toggle-section">
+        <div class="toggle-info">
+          <span class="info-icon">ℹ️</span>
+          <span class="toggle-text">Smart Translate: Auto-detect and swap languages based on your input</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="smartTranslate" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <!-- Save Button -->
+      <button type="button" id="saveBtn" class="save-btn">
+        Save Settings
+      </button>
+
+      <!-- Status Message -->
+      <div id="statusMessage" class="status-message hidden"></div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>v1.0.0 • Made with ❤️</p>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
