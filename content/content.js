@@ -15,6 +15,7 @@
     let currentTextBox = null;
     let translationTimer = null; // Timer untuk delay terjemahan
     let serviceEnabled = true; // Service on/off state
+    let translationHistory = []; // Translation history (max 20 entries)
 
     // ===== Config =====
     const TRANSLATION_DELAY_MS = 500; // Delay sebelum terjemahan dimulai (dalam milidetik)
@@ -63,7 +64,31 @@
                     removeModal();
                 }
             }
+            if (message.type === 'CONTEXT_MENU_TRANSLATE' || message.type === 'KEYBOARD_TRANSLATE') {
+                handleShortcutTranslate(message.text);
+            }
         });
+    }
+    
+    /**
+     * Handle translation triggered by keyboard shortcut or context menu
+     */
+    async function handleShortcutTranslate(text) {
+        if (!serviceEnabled || !settings?.apiKey) return;
+        
+        const selectedText = text || window.getSelection().toString().trim();
+        if (!selectedText || selectedText.length < 2) {
+            showToast('Please select some text to translate', 'info');
+            return;
+        }
+        
+        // Use current selection range
+        const selection = window.getSelection();
+        const range = selection.rangeCount > 0 ? selection.getRangeAt(0).getBoundingClientRect() : null;
+        
+        if (range) {
+            await showTranslationPopup(selectedText, range);
+        }
     }
 
     // ===== Event Listeners =====
@@ -302,10 +327,21 @@
             }
 
             if (response.success) {
+                // Add to history
+                addToHistory({
+                    original: text,
+                    translation: response.translation,
+                    sourceLang: response.detectedLang || settings.sourceLang,
+                    targetLang: settings.targetLang || 'id',
+                    timestamp: Date.now(),
+                    cached: response.cached || false
+                });
+                
                 popup.innerHTML = createPopupContent({
                     translation: response.translation,
                     sourceLang: response.detectedLang || settings.sourceLang,
-                    targetLang: settings.targetLang || 'id'
+                    targetLang: settings.targetLang || 'id',
+                    cached: response.cached || false
                 });
                 setupPopupEvents();
             } else {
@@ -337,7 +373,7 @@
         }
     }
 
-    function createPopupContent({ loading, translation, error, sourceLang, targetLang }) {
+    function createPopupContent({ loading, translation, error, sourceLang, targetLang, cached = false }) {
         const langNames = {
             'auto': 'Auto',
             'en': 'EN',
@@ -366,6 +402,7 @@
           <span>${langNames[sourceLang] || sourceLang}</span>
           <span class="ait-lang-arrow">→</span>
           <span>${langNames[targetLang] || targetLang}</span>
+          ${cached ? '<span class="ait-badge cached">⚡ Cached</span>' : ''}
         </div>
         <button class="ait-close-btn" title="Close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -630,5 +667,23 @@
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+    
+    /**
+     * Add translation to history
+     */
+    function addToHistory(entry) {
+        translationHistory.unshift(entry);
+        // Keep only last 20 entries
+        if (translationHistory.length > 20) {
+            translationHistory = translationHistory.slice(0, 20);
+        }
+    }
+    
+    /**
+     * Get translation history
+     */
+    function getHistory() {
+        return translationHistory;
     }
 })();

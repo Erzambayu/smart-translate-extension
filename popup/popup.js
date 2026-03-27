@@ -9,6 +9,7 @@ const targetLangSelect = document.getElementById('targetLang');
 const swapLangBtn = document.getElementById('swapLang');
 const smartTranslateToggle = document.getElementById('smartTranslate');
 const saveBtn = document.getElementById('saveBtn');
+const testConnectionBtn = document.getElementById('testConnectionBtn');
 const statusMessage = document.getElementById('statusMessage');
 const serviceEnabledToggle = document.getElementById('serviceEnabled');
 const serviceStatus = document.getElementById('serviceStatus');
@@ -21,6 +22,7 @@ serviceSelect.addEventListener('change', handleServiceChange);
 toggleApiKeyBtn.addEventListener('click', toggleApiKeyVisibility);
 swapLangBtn.addEventListener('click', swapLanguages);
 saveBtn.addEventListener('click', saveSettings);
+testConnectionBtn.addEventListener('click', testConnection);
 serviceEnabledToggle.addEventListener('change', handleServiceToggle);
 
 // ===== Functions =====
@@ -219,4 +221,50 @@ function showStatus(message, type) {
   setTimeout(() => {
     statusMessage.classList.add('hidden');
   }, 3000);
+}
+
+/**
+ * Test API connection
+ */
+async function testConnection() {
+  const service = serviceSelect.value;
+  const customEndpoint = customEndpointInput.value.trim();
+  const apiKey = apiKeyInput.value.trim();
+
+  // Validation
+  if (!apiKey) {
+    showStatus('Please enter your API key first', 'error');
+    return;
+  }
+
+  if (service === 'custom' && !customEndpoint) {
+    showStatus('Please enter custom API endpoint first', 'error');
+    return;
+  }
+
+  // Show loading state
+  testConnectionBtn.disabled = true;
+  testConnectionBtn.textContent = 'Testing...';
+  showStatus('Testing connection...', 'info');
+
+  try {
+    const response = await chrome.runtime.sendMessage({
+      type: 'TEST_CONNECTION',
+      service,
+      apiKey,
+      customEndpoint
+    });
+
+    if (response.success) {
+      showStatus(`✓ Connection successful! Sample: "${response.sampleTranslation}"`, 'success');
+    } else {
+      showStatus(`✗ Connection failed: ${response.error}`, 'error');
+    }
+  } catch (error) {
+    console.error('Test connection error:', error);
+    showStatus(`✗ Connection failed: ${error.message}`, 'error');
+  } finally {
+    testConnectionBtn.disabled = false;
+    testConnectionBtn.textContent = 'Test Connection';
+  }
 }
