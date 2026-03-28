@@ -104,21 +104,35 @@
     function isExternalElement(element) {
         if (!element) return false;
 
-        // Check for common extension patterns
-        const tagName = element.tagName?.toLowerCase() || '';
+        // Traverse up the DOM tree to check all ancestors
+        let current = element;
+        while (current && current !== document.body && current !== document.documentElement) {
+            // Check for Shadow DOM host — verify it's actually from another extension
+            if (current.shadowRoot) {
+                try {
+                    const hostBaseURI = current.shadowRoot.host?.baseURI || '';
+                    if (hostBaseURI.startsWith('chrome-extension://')) return true;
+                } catch (e) {
+                    // Cross-origin shadow root — likely from another extension
+                    if (current.shadowRoot.host) return true;
+                }
+            }
 
-        // Shadow DOM hosts from other extensions
-        if (element.shadowRoot) return true;
+            // Check for extension-specific attributes
+            if (current.hasAttribute?.('data-extension-id')) return true;
+            if (current.id?.startsWith('crx_')) return true;
 
-        // Elements with extension-specific attributes
-        if (element.closest('[data-extension-id]')) return true;
-        if (element.closest('[class*="extension"]')) return true;
+            // Check for extension-specific classes (specific patterns only, not generic "extension")
+            const classes = current.className && typeof current.className === 'string' ? current.className : '';
+            if (/\b(crx_|chrome-extension|browser-extension)\b/i.test(classes)) return true;
 
-        // WhatsApp Web specific elements
-        if (element.closest('[data-app="web"]')) return true;
-        if (element.closest('#app')) {
-            // Check if it's actually WhatsApp
-            if (window.location.hostname.includes('whatsapp')) return true;
+            current = current.parentElement;
+        }
+
+        // WhatsApp Web specific check
+        if (window.location.hostname.includes('whatsapp')) {
+            if (element.closest('[data-app="web"]')) return true;
+            if (element.closest('#app')) return true;
         }
 
         return false;
@@ -594,8 +608,26 @@
         const element = currentTextBox;
 
         if (element.isContentEditable) {
-            // ContentEditable element
-            document.execCommand('insertText', false, translation);
+            // ContentEditable element — use modern Selection/Range API
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                range.deleteContents();
+                const textNode = document.createTextNode(translation);
+                range.insertNode(textNode);
+                // Move cursor after inserted text
+                range.setStartAfter(textNode);
+                range.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+            // Trigger input event for frameworks (React, Vue, etc.)
+            element.dispatchEvent(new InputEvent('input', {
+                bubbles: true,
+                cancelable: true,
+                inputType: 'insertText',
+                data: translation
+            }));
         } else {
             // Input or textarea
             const start = element.selectionStart;
