@@ -99,6 +99,29 @@
     font-size: 10px;
 }
 
+/* ===== Badges ===== */
+.ait-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 4px;
+}
+
+.ait-badge.cached {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.ai-translator-popup.dark .ait-badge.cached {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+
 .ait-close-btn {
     background: none;
     border: none;

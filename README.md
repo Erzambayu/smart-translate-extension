@@ -2,7 +2,7 @@
 
 Ekstensi Chrome untuk menerjemahkan teks secara instan menggunakan berbagai layanan AI. Cukup blok teks dan terjemahan akan muncul otomatis!
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)
 ![Chrome](https://img.shields.io/badge/chrome-extension-green.svg)
 
 ## ✨ Fitur Utama
@@ -13,6 +13,11 @@ Ekstensi Chrome untuk menerjemahkan teks secara instan menggunakan berbagai laya
 - **🔍 Auto-Detect Bahasa** - Deteksi bahasa sumber secara otomatis
 - **🌙 Adaptive Theme** - Popup menyesuaikan dengan tema halaman (terang/gelap)
 - **🌍 18 Bahasa** - ID, EN, JA, KO, ZH, ES, FR, DE, PT, RU, AR, HI, TH, VI, NL, PL, TR, IT
+- **⚡ Smart Caching** - Translasi di-cache selama 30 menit untuk akses super cepat
+- **🔄 Auto Retry** - Retry otomatis dengan exponential backoff untuk koneksi stabil
+- **🎯 Test Connection** - Test API key langsung dari pengaturan
+- **⌨️ Keyboard Shortcut** - Gunakan `Ctrl+Shift+T` (Mac: `Cmd+Shift+T`) untuk terjemahan cepat
+- **📜 Translation History** - Riwayat translasi session (20 terakhir)
 
 ---
 
@@ -160,6 +165,11 @@ POST /your-endpoint
 4. Popup terjemahan akan muncul di atas teks
 5. Klik **"Copy"** untuk menyalin terjemahan
 
+### Menerjemahkan dengan Keyboard Shortcut
+1. Blok/select teks yang ingin diterjemahkan
+2. Tekan **`Ctrl+Shift+T`** (Windows/Linux) atau **`Cmd+Shift+T`** (Mac)
+3. Terjemahan akan langsung muncul
+
 ### Menerjemahkan di Text Box/Input
 1. Ketik teks di input field atau textarea
 2. **Blok/select teks** yang ingin diterjemahkan
@@ -170,6 +180,7 @@ POST /your-endpoint
 - Tekan **Escape** untuk menutup popup
 - Klik di luar popup untuk menutup
 - Gunakan **Auto Detect** untuk bahasa sumber jika tidak yakin
+- Badge **⚡ Cached** menunjukkan hasil dari cache (super cepat)
 
 ---
 
@@ -212,6 +223,18 @@ Ekstensi ini tidak aktif di situs berikut untuk menghindari konflik:
 ---
 
 ## 📝 Changelog
+
+### v1.2.0
+- ✨ **Smart Caching** - Translasi di-cache 30 menit untuk akses super cepat
+- ✨ **Auto Retry** - Retry otomatis dengan exponential backoff (1s, 2s, 4s)
+- ✨ **Test Connection** - Test API key langsung dari pengaturan
+- ✨ **Keyboard Shortcut** - `Ctrl+Shift+T` / `Cmd+Shift+T` untuk terjemahan cepat
+- ✨ **Translation History** - Riwayat 20 translasi terakhir (session-based)
+- ✨ **Cache Indicator** - Badge "⚡ Cached" di popup
+- 🐛 Perbaiki edge cases di smart positioning popup
+- 🐛 Handle API rate limits lebih baik
+- 🔒 Optimasi host permissions di manifest.json
+- 📚 Update documentation
 
 ### v1.1.0
 - ✨ Tambah tombol On/Off service di header popup
